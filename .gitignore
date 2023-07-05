@@ -73,8 +73,9 @@ Plugins/*/Intermediate/*
 # Cache files for the editor to use
 DerivedDataCache/*
 
-# Quixel Megascans Library
+# 3rd Party Assets
 Content/Megascans
 Content/BlackAlder
 Content/WaterMaterials
 Content/MedievalDungeon
+Content/AnimalVarietyPack
