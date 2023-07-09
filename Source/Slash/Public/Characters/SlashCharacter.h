@@ -35,6 +35,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* LookAction;
 
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* JumpAction;
+
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 
@@ -46,7 +49,7 @@ private:
 	UCameraComponent* ViewCamera;
 
 	UPROPERTY(VisibleAnywhere, Category = Hair)
-	UGroomComponent* Hair;
+	UGroomComponent* HeadHair;
 
 	UPROPERTY(VisibleAnywhere, Category = Hair)
 	UGroomComponent* Eyebrows;
