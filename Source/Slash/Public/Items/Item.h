@@ -11,7 +11,8 @@ class USphereComponent;
 enum class EItemState : uint8
 {
 	EIS_Hovering,
-	EIS_Equipped
+	EIS_Equipped,
+	EIS_Unequipped
 };
 
 UCLASS()
@@ -41,6 +42,9 @@ protected:
 	template<typename T>
 	T Avg(T First, T Second);
 
+	UPROPERTY(VisibleAnywhere)
+	USphereComponent* Sphere;
+
 	UFUNCTION()
 	virtual void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
@@ -55,9 +59,6 @@ protected:
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float RunningTime = 0;
-
-	UPROPERTY(VisibleAnywhere)
-	USphereComponent* Sphere;
 };
 
 template<typename T>
