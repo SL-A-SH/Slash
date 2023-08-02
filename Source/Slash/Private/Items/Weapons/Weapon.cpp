@@ -8,6 +8,7 @@
 #include "Components/BoxComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Interfaces/HitInterface.h"
+#include "NiagaraComponent.h"
 
 AWeapon::AWeapon()
 {
@@ -22,6 +23,9 @@ AWeapon::AWeapon()
 
 	BoxTraceEnd = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace End"));
 	BoxTraceEnd->SetupAttachment(GetRootComponent());
+
+	GlowEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Glow"));
+	GlowEffect->SetupAttachment(GetRootComponent());
 }
 
 void AWeapon::BeginPlay()
@@ -43,6 +47,11 @@ void AWeapon::Equip(USceneComponent* InParent, FName InSocketName)
 	if (Sphere)
 	{
 		Sphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+
+	if (GlowEffect)
+	{
+		GlowEffect->Deactivate();
 	}
 }
 

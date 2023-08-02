@@ -9,6 +9,7 @@
 class USoundBase;
 class UBoxComponent;
 class USceneComponent;
+class UNiagaraComponent;
 
 /**
  * 
@@ -37,6 +38,9 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void CreateFields(const FVector& FieldLocation);
+
+	UPROPERTY(EditAnywhere)
+	UNiagaraComponent* GlowEffect;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
