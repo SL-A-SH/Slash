@@ -58,6 +58,10 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	float Damage = 20.f;
 
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	FString WeaponType = "One-Handed";
+
 public:
 	FORCEINLINE UBoxComponent* GetWeaponBox() const { return WeaponBox; }
+	FORCEINLINE FString GetWeaponType() const { return WeaponType; }
 };

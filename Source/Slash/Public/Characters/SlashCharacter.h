@@ -52,7 +52,13 @@ protected:
 	UInputAction* EKeyAction;
 
 	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* Equip1hAction;
+
+	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* AttackAction;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* Equip2hAction;
 
 	/**
 	* Input callbacks
@@ -60,29 +66,39 @@ protected:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void EKeyPressed(const FInputActionValue& Value);
+	void Num1KeyPressed(const FInputActionValue& Value);
+	void Num2KeyPressed(const FInputActionValue& Value);
 	void Attack(const FInputActionValue& Value);
 
 	/**
 	*	Play montage functions
 	*/
-	void PlayAttackMontage();
-	void PlayEquipMontage(const FName& SectionName);
+	void PlayAttackMontage(UAnimMontage* AttackMontage);
+	void PlayEquipMontage(const FName& SectionName, UAnimMontage* EquipMontage);
 
 	UFUNCTION(BLueprintCallable)
 	void AttackEnd();
 
 	UFUNCTION(BLueprintCallable)
-	void Arm();
+	void Arm1h();
 
 	UFUNCTION(BLueprintCallable)
-	void Disarm();
+	void Arm2h();
+
+	UFUNCTION(BLueprintCallable)
+	void Disarm1h();
+
+	UFUNCTION(BLueprintCallable)
+	void Disarm2h();
 
 	UFUNCTION(BLueprintCallable)
 	void FinishEquipping();
 
 	bool CanAttack();
-	bool CanDisarm();
-	bool CanArm();
+	bool CanDisarm1h();
+	bool CanDisarm2h();
+	bool CanArm1h();
+	bool CanArm2h();
 
 private:
 	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
@@ -106,17 +122,29 @@ private:
 	AItem* OverlappingItem;
 
 	UPROPERTY(VisibleAnywhere)
-	AWeapon* EquippedWeapon;
+	AWeapon* Equipped1hWeapon;
+
+	UPROPERTY(VisibleAnywhere)
+	AWeapon* Equipped2hWeapon;
+
+	UPROPERTY(VisibleAnywhere)
+	AWeapon* ActiveWeapon;
 
 	/**
 	* Animation Montages
 	*/
 
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
-	UAnimMontage* AttackMontage;
+	UAnimMontage* AttackMontage_1h;
 
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
-	UAnimMontage* EquipMontage;
+	UAnimMontage* AttackMontage_2h;
+
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UAnimMontage* EquipMontage_1h;
+
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UAnimMontage* EquipMontage_2h;
 
 public:
 	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }
