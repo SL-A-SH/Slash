@@ -54,6 +54,8 @@ void ASlashCharacter::BeginPlay()
 			Subsystem->AddMappingContext(SlashCharacterMappingContext, 0);
 		}
 	}
+
+	Tags.Add(FName("SlashCharacter"));
 }
 
 void ASlashCharacter::Move(const FInputActionValue& Value)
@@ -84,6 +86,8 @@ void ASlashCharacter::Look(const FInputActionValue& Value)
 
 void ASlashCharacter::EKeyPressed(const FInputActionValue& Value)
 {
+	if (!OverlappingItem) return;
+
 	AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem);
 	FString WeaponType = OverlappingWeapon->GetWeaponType();
 	if (OverlappingWeapon)
