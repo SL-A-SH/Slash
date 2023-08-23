@@ -3,8 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
-#include "InputActionValue.h"
+#include "BaseCharacter.h"
 #include "CharacterTypes.h"
 #include "SlashCharacter.generated.h"
 
@@ -15,10 +14,9 @@ class UCameraComponent;
 class UGroomComponent;
 class AItem;
 class UAnimMontage;
-class AWeapon;
 
 UCLASS()
-class SLASH_API ASlashCharacter : public ACharacter
+class SLASH_API ASlashCharacter : public ABaseCharacter
 {
 	GENERATED_BODY()
 
@@ -26,9 +24,6 @@ public:
 	ASlashCharacter();
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	UFUNCTION(BLueprintCallable)
-	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 
 protected:
 	virtual void BeginPlay() override;
@@ -68,16 +63,15 @@ protected:
 	void EKeyPressed(const FInputActionValue& Value);
 	void Num1KeyPressed(const FInputActionValue& Value);
 	void Num2KeyPressed(const FInputActionValue& Value);
-	void Attack(const FInputActionValue& Value);
+	virtual void Attack(const FInputActionValue& Value) override;
 
 	/**
 	*	Play montage functions
 	*/
-	void PlayAttackMontage(UAnimMontage* AttackMontage);
+	virtual void PlayAttackMontage(UAnimMontage* AttackMontage) override;
 	void PlayEquipMontage(const FName& SectionName, UAnimMontage* EquipMontage);
 
-	UFUNCTION(BLueprintCallable)
-	void AttackEnd();
+	virtual void AttackEnd() override;
 
 	UFUNCTION(BLueprintCallable)
 	void Arm1h();
@@ -94,7 +88,7 @@ protected:
 	UFUNCTION(BLueprintCallable)
 	void FinishEquipping();
 
-	bool CanAttack();
+	virtual bool CanAttack() override;
 	bool CanDisarm1h();
 	bool CanDisarm2h();
 	bool CanArm1h();
@@ -122,23 +116,11 @@ private:
 	AItem* OverlappingItem;
 
 	UPROPERTY(VisibleAnywhere)
-	AWeapon* Equipped1hWeapon;
-
-	UPROPERTY(VisibleAnywhere)
-	AWeapon* Equipped2hWeapon;
-
-	UPROPERTY(VisibleAnywhere)
 	AWeapon* ActiveWeapon;
 
 	/**
 	* Animation Montages
 	*/
-
-	UPROPERTY(EditDefaultsOnly, Category = Montages)
-	UAnimMontage* AttackMontage_1h;
-
-	UPROPERTY(EditDefaultsOnly, Category = Montages)
-	UAnimMontage* AttackMontage_2h;
 
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* EquipMontage_1h;

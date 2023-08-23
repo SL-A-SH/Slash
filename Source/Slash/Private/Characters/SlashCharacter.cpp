@@ -12,7 +12,7 @@
 #include "Items/Item.h"
 #include "Items/Weapons/Weapon.h"
 #include "Animation/AnimMontage.h"
-#include "Components/BoxComponent.h"
+
 
 ASlashCharacter::ASlashCharacter()
 {
@@ -303,21 +303,6 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(Equip1hAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Num1KeyPressed);
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Attack);
 		EnhancedInputComponent->BindAction(Equip2hAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Num2KeyPressed);
-	}
-}
-
-void ASlashCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
-{
-	if (Equipped1hWeapon && Equipped1hWeapon->GetWeaponBox())
-	{
-		Equipped1hWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
-		Equipped1hWeapon->IgnoreActors.Empty();
-	}
-
-	if (Equipped2hWeapon && Equipped2hWeapon->GetWeaponBox())
-	{
-		Equipped2hWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
-		Equipped2hWeapon->IgnoreActors.Empty();
 	}
 }
 
