@@ -21,13 +21,28 @@ public:
 	ABaseCharacter();
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION(BLueprintCallable)
-	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
-
 protected:
 	virtual void BeginPlay() override;
+
+	virtual bool CanAttack();
 	virtual void Attack(const FInputActionValue& Value);
+	virtual void Attack();
 	virtual void Die();
+	void DisableCapsule();
+	virtual void HandleDamage(float DamageAmount);
+	void DirectionalHitReact(const FVector& ImpactPoint);
+	void PlayHitSound(const FVector& ImpactPoint);
+	void SpawnHitParticles(const FVector& ImpactPoint);
+	void PlayHitReactMontage(const FName& SectionName);
+	void PlayAttackMontage(UAnimMontage* AttackMontage);
+	virtual int32 PlayDeathMontage();
+	bool IsAlive();
+
+	UFUNCTION(BLueprintCallable)
+	virtual void AttackEnd();
+
+	UFUNCTION(BLueprintCallable)
+	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 
 	UPROPERTY(VisibleAnywhere)
 	AWeapon* Equipped1hWeapon;
@@ -35,36 +50,18 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	AWeapon* Equipped2hWeapon;
 
-	/*
-	* Components
-	*/
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UAttributeComponent* Attributes;
-
-	/**
-	* Animation Montages
-	*/
-
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* AttackMontage_1h;
 
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* AttackMontage_2h;
 
-	UPROPERTY(EditDefaultsOnly, Category = Montages)
-	UAnimMontage* HitReactMontage;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UAttributeComponent* Attributes;
 
-	UPROPERTY(EditDefaultsOnly, Category = Montages)
-	UAnimMontage* DeathMontage;
-
-	/**
-	*	Play montage functions
-	*/
-	virtual void PlayAttackMontage(UAnimMontage* AttackMontage);
-	void PlayHitReactMontage(const FName& SectionName);
-
-	void DirectionalHitReact(const FVector& ImpactPoint);
+private:
+	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
+	int32 PlayRandomMontageSection(UAnimMontage* Montage);
 
 	UPROPERTY(EditAnywhere, Category = Sounds)
 	USoundBase* HitSound;
@@ -72,8 +69,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = VisualEffects)
 	UParticleSystem* HitParticles;
 
-	virtual bool CanAttack();
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UAnimMontage* HitReactMontage;
 
-	UFUNCTION(BLueprintCallable)
-	virtual void AttackEnd();
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UAnimMontage* DeathMontage;
 };
