@@ -30,6 +30,22 @@ void ABaseCharacter::BeginPlay()
 	
 }
 
+void ABaseCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
+{
+	if (IsAlive() && Hitter)
+	{
+		SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
+		DirectionalHitReact(Hitter->GetActorLocation());
+	}
+	else
+	{
+		Die();
+	}
+
+	PlayHitSound(ImpactPoint);
+	SpawnHitParticles(ImpactPoint);
+}
+
 bool ABaseCharacter::CanAttack()
 {
 	return false;
@@ -136,6 +152,39 @@ void ABaseCharacter::PlayAttackMontage(UAnimMontage* AttackMontage)
 int32 ABaseCharacter::PlayDeathMontage()
 {
 	return PlayRandomMontageSection(DeathMontage);
+}
+
+FVector ABaseCharacter::GetTranslationWarpTarget()
+{
+	if (CombatTarget == nullptr) return FVector();
+	
+	const FVector CombatTargetLocation = CombatTarget->GetActorLocation();
+	const FVector Location = GetActorLocation();
+
+	FVector TargetToMe = (Location - CombatTargetLocation).GetSafeNormal();
+	TargetToMe *= WarpTargetDistance;
+
+	return CombatTargetLocation + TargetToMe;
+}
+
+FVector ABaseCharacter::GetRotationWarpTarget()
+{
+	if (CombatTarget)
+	{
+		return CombatTarget->GetActorLocation();
+	}
+	return FVector();
+}
+
+void ABaseCharacter::StopAttackMontage(UAnimMontage* AttackMontage)
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+	if (AnimInstance)
+	{
+		AnimInstance->Montage_Stop(0.25, AttackMontage);
+	}
+
 }
 
 bool ABaseCharacter::IsAlive()

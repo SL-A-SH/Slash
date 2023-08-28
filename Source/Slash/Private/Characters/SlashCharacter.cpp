@@ -5,6 +5,7 @@
 #include "Components/InputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
@@ -24,6 +25,12 @@ ASlashCharacter::ASlashCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 400.f, 0.f);
 
+	GetMesh()->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
+	GetMesh()->SetGenerateOverlapEvents(true);
+	 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(GetRootComponent());
 	SpringArm->TargetArmLength = 300.f;
@@ -58,6 +65,13 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	}
 }
 
+void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
+{
+	Super::GetHit_Implementation(ImpactPoint, Hitter);
+
+	ActionState = EActionState::EAS_HitReaction;
+}
+
 void ASlashCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -70,7 +84,7 @@ void ASlashCharacter::BeginPlay()
 		}
 	}
 
-	Tags.Add(FName("SlashCharacter"));
+	Tags.Add(FName("EngageableTarget"));
 }
 
 void ASlashCharacter::Move(const FInputActionValue& Value)
@@ -286,6 +300,11 @@ void ASlashCharacter::AttachWeaponToScabbard()
 }
 
 void ASlashCharacter::FinishEquipping()
+{
+	ActionState = EActionState::EAS_Unoccupied;
+}
+
+void ASlashCharacter::HitReactEnd()
 {
 	ActionState = EActionState::EAS_Unoccupied;
 }

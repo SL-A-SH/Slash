@@ -23,7 +23,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
+	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
 	virtual bool CanAttack();
 	virtual void Attack(const FInputActionValue& Value);
 	virtual void Attack();
@@ -33,10 +33,19 @@ protected:
 	void DirectionalHitReact(const FVector& ImpactPoint);
 	void PlayHitSound(const FVector& ImpactPoint);
 	void SpawnHitParticles(const FVector& ImpactPoint);
+	bool IsAlive();
+
+	/** Montage */
 	void PlayHitReactMontage(const FName& SectionName);
 	void PlayAttackMontage(UAnimMontage* AttackMontage);
+	void StopAttackMontage(UAnimMontage* AttackMontage);
 	virtual int32 PlayDeathMontage();
-	bool IsAlive();
+
+	UFUNCTION(BLueprintCallable)
+	FVector GetTranslationWarpTarget();
+
+	UFUNCTION(BLueprintCallable)
+	FVector GetRotationWarpTarget();
 
 	UFUNCTION(BLueprintCallable)
 	virtual void AttackEnd();
@@ -50,28 +59,34 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	AWeapon* Equipped2hWeapon;
 
-	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UPROPERTY(EditDefaultsOnly, Category = Combat)
 	UAnimMontage* AttackMontage_1h;
 
-	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UPROPERTY(EditDefaultsOnly, Category = Combat)
 	UAnimMontage* AttackMontage_2h;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UAttributeComponent* Attributes;
 
+	UPROPERTY(BlueprintReadOnly, Category = Combat)
+	AActor* CombatTarget;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	double WarpTargetDistance = 75.f;
+
 private:
 	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
 	int32 PlayRandomMontageSection(UAnimMontage* Montage);
 
-	UPROPERTY(EditAnywhere, Category = Sounds)
+	UPROPERTY(EditAnywhere, Category = Combat)
 	USoundBase* HitSound;
 
-	UPROPERTY(EditAnywhere, Category = VisualEffects)
+	UPROPERTY(EditAnywhere, Category = Combat)
 	UParticleSystem* HitParticles;
 
-	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UPROPERTY(EditDefaultsOnly, Category = Combat)
 	UAnimMontage* HitReactMontage;
 
-	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UPROPERTY(EditDefaultsOnly, Category = Combat)
 	UAnimMontage* DeathMontage;
 };
