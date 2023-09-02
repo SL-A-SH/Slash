@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "BaseCharacter.h"
 #include "CharacterTypes.h"
+#include "Interfaces/PickupInterface.h"
 #include "SlashCharacter.generated.h"
 
 class UInputMappingContext;
@@ -13,17 +14,29 @@ class USpringArmComponent;
 class UCameraComponent;
 class UGroomComponent;
 class AItem;
+class ASoul;
+class AHealth;
+class ATreasure;
 class UAnimMontage;
+class USlashOverlay;
 
 UCLASS()
-class SLASH_API ASlashCharacter : public ABaseCharacter
+class SLASH_API ASlashCharacter : public ABaseCharacter, public IPickupInterface
 {
 	GENERATED_BODY()
 
 public:
 	ASlashCharacter();
+	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void Jump() override;
+
 	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+	virtual void SetOverlappingItem(AItem* Item) override;
+	virtual void AddSouls(ASoul* Soul) override;
+	virtual bool AddHealth(AHealth* Health) override;
+	virtual void AddGold(ATreasure* Treasure) override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -51,6 +64,9 @@ protected:
 	UInputAction* AttackAction;
 
 	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* DodgeAction;
+
+	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* Equip2hAction;
 
 	/** Input callbacks */
@@ -60,18 +76,23 @@ protected:
 	void Num1KeyPressed(const FInputActionValue& Value);
 	void Num2KeyPressed(const FInputActionValue& Value);
 	virtual void Attack(const FInputActionValue& Value) override;
+	void Dodge(const FInputActionValue& Value);
 
 	/** Combat */
 	void EquipWeapon(AWeapon* Weapon);
 	void PlayEquipMontage(const FName& SectionName, UAnimMontage* EquipMontage);
 	virtual bool CanAttack() override;
 	virtual void AttackEnd() override;
+	virtual void DodgeEnd() override;
 	bool CanDisarm1h();
 	bool CanDisarm2h();
 	bool CanArm1h();
 	bool CanArm2h();
 	void Arm();
 	void Disarm();
+	virtual void Die() override;
+	bool HasEnoughStamina();
+	bool IsOccupied();
 
 	UFUNCTION(BLueprintCallable)
 	void AttachWeaponToHand();
@@ -86,6 +107,10 @@ protected:
 	void HitReactEnd();
 
 private:
+	bool IsUnoccupied();
+	void InitializeSlashOverlay(APlayerController* PlayerController);
+	void SetHUDHealth();
+
 	/** Character Components */
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArm;
@@ -118,7 +143,10 @@ private:
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	EActionState ActionState = EActionState::EAS_Unoccupied;
 
+	UPROPERTY()
+	USlashOverlay* SlashOverlay;
+
 public:
-	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }
 	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState; }
+	FORCEINLINE EActionState GetActionState() const { return ActionState; }
 };

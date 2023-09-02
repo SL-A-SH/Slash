@@ -6,9 +6,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/SphereComponent.h"
 #include "Components/BoxComponent.h"
+#include "NiagaraComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Interfaces/HitInterface.h"
-#include "NiagaraComponent.h"
 
 AWeapon::AWeapon()
 {
@@ -23,9 +23,6 @@ AWeapon::AWeapon()
 
 	BoxTraceEnd = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace End"));
 	BoxTraceEnd->SetupAttachment(GetRootComponent());
-
-	GlowEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Glow"));
-	GlowEffect->SetupAttachment(GetRootComponent());
 }
 
 void AWeapon::BeginPlay()
@@ -42,15 +39,14 @@ void AWeapon::Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOw
 	SetInstigator(NewInstigator);
 	AttachMeshToSocket(InParent, InSocketName);
 	DisableSphereCollision();
-	PlayEquipSound();
 	DeactivateGlowEffect();
 }
 
 void AWeapon::DeactivateGlowEffect()
 {
-	if (GlowEffect)
+	if (ItemEffect)
 	{
-		GlowEffect->Deactivate();
+		ItemEffect->Deactivate();
 	}
 }
 

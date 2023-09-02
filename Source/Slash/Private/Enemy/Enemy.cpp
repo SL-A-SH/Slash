@@ -9,6 +9,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/PawnSensingComponent.h"
 #include "Items/Weapons/Weapon.h"
+#include "Items/Soul.h"
 
 AEnemy::AEnemy()
 {
@@ -109,9 +110,11 @@ bool AEnemy::CanAttack()
 
 void AEnemy::Attack()
 {
-	EnemyState = EEnemyState::EES_Engaged;
-
 	Super::Attack();
+
+	if (CombatTarget == nullptr) return;
+
+	EnemyState = EEnemyState::EES_Engaged;
 
 	if (Equipped1hWeapon)
 	{
@@ -137,27 +140,35 @@ void AEnemy::HandleDamage(float DamageAmount)
 
 void AEnemy::Die()
 {
+	Super::Die();
+
 	EnemyState = EEnemyState::EES_Dead;
-	PlayDeathMontage();
+
 	ClearAttackTimer();
 	HideHealthBar();
 	DisableCapsule();
 	SetLifeSpan(DeathLifeSpan);
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
+	SpawnSoul();
 }
 
-int32 AEnemy::PlayDeathMontage()
+void AEnemy::SpawnSoul()
 {
-	const int32 Selection = Super::PlayDeathMontage();
-	TEnumAsByte<EDeathPose> Pose(Selection);
-
-	if (Pose < EDeathPose::EDP_MAX)
+	UWorld* World = GetWorld();
+	if (World && SoulClass && Attributes)
 	{
-		DeathPose = Pose;
+		ASoul* SpawnedSoul = World->SpawnActor<ASoul>(SoulClass, GetActorLocation(), GetActorRotation());
+		if (SpawnedSoul) 
+		{
+			SpawnedSoul->SetSouls(Attributes->GetSouls());
+		}
 	}
+}
 
-	return Selection;
+void AEnemy::HitReactEnd()
+{
+	EnemyState = EEnemyState::EES_HitReaction;
 }
 
 void AEnemy::InitializeEnemy()
@@ -315,7 +326,7 @@ void AEnemy::MoveToTarget(AActor* Target)
 
 	FAIMoveRequest MoveRequest;
 	MoveRequest.SetGoalActor(Target);
-	MoveRequest.SetAcceptanceRadius(50.f);
+	MoveRequest.SetAcceptanceRadius(100.f);
 	EnemyController->MoveTo(MoveRequest);
 }
 
@@ -346,7 +357,8 @@ void AEnemy::PawnSeen(APawn* SeenPawn)
 		EnemyState != EEnemyState::EES_Dead &&
 		EnemyState != EEnemyState::EES_Chasing &&
 		EnemyState < EEnemyState::EES_Attacking &&
-		SeenPawn->ActorHasTag(FName("EngageableTarget"));
+		SeenPawn->ActorHasTag(FName("EngageableTarget")) &&
+		!SeenPawn->ActorHasTag(FName("Dead"));
 
 	if (bShouldChaseTarget)
 	{

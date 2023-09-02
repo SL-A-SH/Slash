@@ -6,6 +6,7 @@
 #include "InputActionValue.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/HitInterface.h"
+#include "Characters/CharacterTypes.h"
 #include "BaseCharacter.generated.h"
 
 class AWeapon;
@@ -29,6 +30,7 @@ protected:
 	virtual void Attack();
 	virtual void Die();
 	void DisableCapsule();
+	void DisableMeshCollision();
 	virtual void HandleDamage(float DamageAmount);
 	void DirectionalHitReact(const FVector& ImpactPoint);
 	void PlayHitSound(const FVector& ImpactPoint);
@@ -40,6 +42,7 @@ protected:
 	void PlayAttackMontage(UAnimMontage* AttackMontage);
 	void StopAttackMontage(UAnimMontage* AttackMontage);
 	virtual int32 PlayDeathMontage();
+	virtual void PlayDodgeMontage();
 
 	UFUNCTION(BLueprintCallable)
 	FVector GetTranslationWarpTarget();
@@ -49,6 +52,9 @@ protected:
 
 	UFUNCTION(BLueprintCallable)
 	virtual void AttackEnd();
+
+	UFUNCTION(BLueprintCallable)
+	virtual void DodgeEnd();
 
 	UFUNCTION(BLueprintCallable)
 	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
@@ -74,6 +80,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Combat)
 	double WarpTargetDistance = 75.f;
 
+	UPROPERTY(BlueprintReadOnly)
+	TEnumAsByte<EDeathPose> DeathPose;
+
 private:
 	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
 	int32 PlayRandomMontageSection(UAnimMontage* Montage);
@@ -89,4 +98,10 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = Combat)
 	UAnimMontage* DeathMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = Combat)
+	UAnimMontage* DodgeMontage;
+
+public:
+	FORCEINLINE TEnumAsByte<EDeathPose> GetDeathPose() const { return DeathPose; }
 };

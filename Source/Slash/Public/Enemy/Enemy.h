@@ -10,6 +10,7 @@
 class UHealthBarComponent;
 class AAIController;
 class UPawnSensingComponent;
+class ASoul;
 
 UCLASS()
 class SLASH_API AEnemy : public ABaseCharacter
@@ -40,14 +41,14 @@ protected:
 	virtual void AttackEnd() override;
 	virtual void HandleDamage(float DamageAmount) override;
 	virtual void Die() override;
-	virtual int32 PlayDeathMontage() override;
+	void SpawnSoul();
 	/** <ABaseCharacter> */
 
 	UPROPERTY(BlueprintReadOnly)
-	TEnumAsByte<EDeathPose> DeathPose;
-
-	UPROPERTY(BlueprintReadOnly)
 	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
+
+	UFUNCTION(BLueprintCallable)
+	void HitReactEnd();
 
 private:
 	/** AI Behaviour */
@@ -129,4 +130,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	float DeathLifeSpan = 8.f;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	TSubclassOf<ASoul> SoulClass;
 };
