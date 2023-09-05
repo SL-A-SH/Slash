@@ -90,7 +90,7 @@ protected:
 	bool CanArm2h();
 	void Arm();
 	void Disarm();
-	virtual void Die() override;
+	virtual void Die_Implementation() override;
 	bool HasEnoughStamina();
 	bool IsOccupied();
 

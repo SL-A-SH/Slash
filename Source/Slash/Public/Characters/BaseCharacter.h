@@ -28,7 +28,10 @@ protected:
 	virtual bool CanAttack();
 	virtual void Attack(const FInputActionValue& Value);
 	virtual void Attack();
-	virtual void Die();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void Die();
+
 	void DisableCapsule();
 	void DisableMeshCollision();
 	virtual void HandleDamage(float DamageAmount);

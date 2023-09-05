@@ -63,7 +63,7 @@ void ABaseCharacter::Attack()
 	}
 }
 
-void ABaseCharacter::Die()
+void ABaseCharacter::Die_Implementation()
 {
 	Tags.Add(FName("Dead"));
 	PlayDeathMontage();
@@ -252,6 +252,8 @@ void ABaseCharacter::PlayMontageSection(UAnimMontage* Montage, const FName& Sect
 
 int32 ABaseCharacter::PlayRandomMontageSection(UAnimMontage* Montage)
 {
+	if (!Montage) return -1;
+
 	const int32 MontageSections = Montage->GetNumSections();
 
 	if (MontageSections <= 0) return -1;

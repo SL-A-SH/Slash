@@ -40,7 +40,7 @@ protected:
 	virtual void Attack() override;
 	virtual void AttackEnd() override;
 	virtual void HandleDamage(float DamageAmount) override;
-	virtual void Die() override;
+	virtual void Die_Implementation() override;
 	void SpawnSoul();
 	/** <ABaseCharacter> */
 
@@ -85,14 +85,8 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UPawnSensingComponent* PawnSensor;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Combat")
 	TSubclassOf<class AWeapon> WeaponClass;
-
-	UPROPERTY(EditAnywhere)
-	double CombatRadius = 1000.f;
-
-	UPROPERTY(EditAnywhere)
-	double AttackRadius = 150.f;
 
 	UPROPERTY()
 	AAIController* EnemyController;
@@ -118,6 +112,15 @@ private:
 	float PatrolWaitMax = 10.f;
 
 	FTimerHandle AttackTimer;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	double CombatRadius = 1000.f;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	double AttackRadius = 150.f;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	double AcceptanceRadius = 50.f;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	float AttackMin = 0.5f;
